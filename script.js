@@ -2,38 +2,10 @@
    1. CONFIGURATION
 ======================= */
 const particleContainer = document.getElementById("particles");
-const frame = document.querySelector(".sticky-frame");
-const frameImage = document.getElementById("frameImage");
-const steps = document.querySelectorAll(".step");
-const storySection = document.getElementById("story");
-
-// List your images here exactly as they appear in your folder
-const imageUrls = [
-  "images/frame-1.jpg", 
-  "images/frame-2.jpg", 
-  "images/frame-3.jpg", 
-  "images/frame-4.jpg"
-];
-
-/* =======================
-   2. IMAGE PRELOADER (The Fix)
-======================= */
-// This forces the browser to download all images immediately
-function preloadImages() {
-  imageUrls.forEach((url) => {
-    const img = new Image();
-    img.src = url;
-    // We don't need to do anything with 'img', just creating it 
-    // forces the browser to download and cache the file.
-  });
-}
-
-// Run preloader as soon as script loads
-preloadImages();
 
 
 /* =======================
-   3. PARTICLES LOGIC
+   2. PARTICLES LOGIC (unchanged)
 ======================= */
 const MAX_PARTICLES = 120;
 const SPAWN_INTERVAL = 120;
@@ -64,45 +36,174 @@ setInterval(() => {
 }, SPAWN_INTERVAL);
 
 
+/* -----------------------------
+   DELAY IMAGE REEL ON LOAD
+------------------------------*/
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    track.classList.add("reveal");
+  }, 3200); // 3.2s delay (tweak if needed)
+});
+
+
 /* =======================
-   4. SCROLL STORYTELLING
+   IMAGE TRACK + TITLE SYNC
 ======================= */
-let currentImage = "";
 
-function onScroll() {
-  const storyRect = storySection.getBoundingClientRect();
+const track = document.getElementById("image-track");
+const images = track.getElementsByClassName("image");
+const title = document.querySelector(".title");
 
-  // Show/Hide the sticky frame based on scroll position
-  if (storyRect.top < window.innerHeight && storyRect.bottom > 0) {
-    frame.classList.remove("hidden");
-  } else {
-    frame.classList.add("hidden");
+let currentPercentage = 0;
+let snapTimeout = null;
+
+// Tweakables
+const SCROLL_SPEED = 0.12;
+const SNAP_DELAY = 120;
+const ANIMATION_TIME = 700;
+
+// Title motion limits (px)
+const TITLE_MOVE_MAX = 150;
+
+// Snap math
+const imageCount = images.length;
+const maxScroll = 100;
+const snapStep = maxScroll / (imageCount - 1);
+
+/* -----------------------------
+   UPDATE TRACK + TITLE
+------------------------------*/
+function updateScene(percentage, duration = 400) {
+  // Image track
+  track.animate(
+    { transform: `translate(${percentage}%, -50%)` },
+    { duration, fill: "forwards", easing: "ease-out" }
+  );
+
+  for (const image of images) {
+    image.animate(
+      { objectPosition: `${100 + percentage}% center` },
+      { duration, fill: "forwards", easing: "ease-out" }
+    );
   }
 
-  // Find which step is currently active
-  steps.forEach((step) => {
-    const rect = step.getBoundingClientRect();
-    
-    // If the step is roughly in the middle of the screen
-    if (rect.top >= 0 && rect.top < window.innerHeight * 0.6) {
-      
-      // Update Active Class
-      steps.forEach(s => s.classList.remove("active"));
-      step.classList.add("active");
+  // Title sync
+  const progress = Math.abs(percentage) / maxScroll;
+  const titleOffset = progress * TITLE_MOVE_MAX;
 
-      // Swap Image (Only if it's different)
-      const newSrc = step.dataset.image;
-      if (newSrc && newSrc !== currentImage) {
-        currentImage = newSrc;
-        
-        // Instant swap (relies on preloader for smoothness)
-        frameImage.src = newSrc;
-      }
-    }
-  });
+  title.animate(
+    { transform: `translateY(-${titleOffset}px)` },
+    { duration, fill: "forwards", easing: "ease-out" }
+  );
+
+  //  NEW: update active image
+  updateActiveImageByIndex();
 }
 
-// Performance optimization: run onScroll only when needed
-window.addEventListener("scroll", () => {
-  window.requestAnimationFrame(onScroll);
+
+
+function updateActiveImageByIndex() {
+  const index = Math.round(
+    Math.abs(currentPercentage) / snapStep
+  );
+
+  for (let i = 0; i < images.length; i++) {
+    images[i].style.transform =
+      i === index ? "scale(1.56)" : "scale(0.96)";
+
+  }
+}
+
+
+
+
+/* -----------------------------
+   SNAP TO NEAREST IMAGE
+------------------------------*/
+function snapToNearest() {
+  const snapped =
+    Math.round(Math.abs(currentPercentage) / snapStep) * snapStep;
+
+  currentPercentage = -snapped;
+  updateScene(currentPercentage, ANIMATION_TIME);
+
+  setTimeout(updateActiveImageByIndex, ANIMATION_TIME);
+
+}
+
+
+/* -----------------------------
+   HORIZONTAL SCROLL HANDLER
+------------------------------*/
+window.addEventListener(
+  "wheel",
+  (e) => {
+    e.preventDefault();
+
+    // Prefer horizontal scroll (trackpad / shift+wheel)
+    const delta =
+      Math.abs(e.deltaX) > Math.abs(e.deltaY)
+        ? e.deltaX
+        : e.deltaY;
+
+    currentPercentage -= delta * SCROLL_SPEED;
+
+    // Clamp
+    currentPercentage = Math.max(
+      Math.min(currentPercentage, 0),
+      -maxScroll
+    );
+
+    updateScene(currentPercentage);
+
+    clearTimeout(snapTimeout);
+    snapTimeout = setTimeout(snapToNearest, SNAP_DELAY);
+  },
+  { passive: false }
+);
+
+
+
+/* =======================
+   TOUCH SUPPORT (MOBILE)
+======================= */
+
+let touchStartX = 0;
+let touchCurrentX = 0;
+let isTouching = false;
+
+// Sensitivity (higher = faster swipe)
+const TOUCH_SPEED = 0.25;
+
+window.addEventListener("touchstart", (e) => {
+  touchStartX = e.touches[0].clientX;
+  isTouching = true;
+  clearTimeout(snapTimeout);
+}, { passive: true });
+
+window.addEventListener("touchmove", (e) => {
+  if (!isTouching) return;
+
+  // 🔴 Stop native horizontal page movement
+  e.preventDefault();
+
+  touchCurrentX = e.touches[0].clientX;
+  const deltaX = touchCurrentX - touchStartX;
+  touchStartX = touchCurrentX;
+
+  currentPercentage += deltaX * TOUCH_SPEED;
+
+  currentPercentage = Math.max(
+    Math.min(currentPercentage, 0),
+    -maxScroll
+  );
+
+  updateScene(currentPercentage, 120);
+}, { passive: false });
+
+window.addEventListener("touchend", () => {
+  if (!isTouching) return;
+
+  isTouching = false;
+  snapTimeout = setTimeout(snapToNearest, SNAP_DELAY);
 });

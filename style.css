@@ -15,7 +15,6 @@
 html, body {
   height: 100%;
   overflow-x: hidden;
-  overflow-y: auto;
   font-family: 'Montserrat', sans-serif;
   background: radial-gradient(circle at top, var(--bg-blue), var(--bg-dark));
   color: white;
@@ -101,96 +100,6 @@ html, body {
   }
 }
 
-/* =======================
-   SCROLL SHOWCASE
-======================= */
-
-.scroll-section {
-  position: relative;
-  background: #000;
-  /* No fixed height needed here anymore, the steps will dictate height */
-}
-
-/* The window effectively holding the image */
-.sticky-frame {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 100vh; /* Full screen height */
-  overflow: hidden;
-  z-index: 1; /* Behind the text */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* The actual image styling */
-.frame-image {
-  width: auto;
-  height: 80vh; /* Max height to fit nicely */
-  max-width: 90%;
-  border-radius: 20px;
-  object-fit: cover;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-/* =======================
-   SCROLL STEPS (The Triggers)
-======================= */
-
-/* This container sits ON TOP of the sticky image */
-.scroll-steps {
-  position: relative;
-  z-index: 10; 
-  margin-top: -100vh; /* Pull steps up to overlap the first sticky image */
-}
-
-/* Each step takes up one full screen scroll */
-.step {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  /* Text styling */
-  color: white;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-  font-size: 2rem;
-  font-weight: 700;
-  opacity: 0.3; /* Dim text when not active */
-  transition: opacity 0.5s ease;
-}
-
-/* Highlight the active text */
-.step.active {
-  opacity: 1;
-}
-
-/* =======================
-   HERO → STORY TRANSITION
-======================= */
-
-.transition {
-  height: 100vh;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(0,0,0,0.8),
-    #000
-  );
-}
-
-/* Hide frame initially */
-.sticky-frame.hidden {
-  opacity: 0;
-  transform: translateY(-50%) scale(0.9);
-}
-
-/* Reveal when active */
-.sticky-frame {
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
 
 
 /* =======================
@@ -206,6 +115,13 @@ html, body {
   -webkit-text-fill-color: transparent;
   animation: shimmer 6s linear infinite;
 }
+.title {
+  position: relative;
+  z-index: 5;
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+}
+
 
 @keyframes shimmer {
   0% { background-position: 0%; }
@@ -233,6 +149,19 @@ html, body {
   }
 }
 
+/* make title and subtitle text unselectable */
+.title,
+.marquee,
+.footer,
+.subtitle {
+  -webkit-user-select: none; /* Safari/Chrome */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE10+ */
+  user-select: none;         /* Standard */
+  cursor: default;
+}
+
+
 /* =======================
    MARQUEE
 ======================= */
@@ -241,24 +170,33 @@ html, body {
   bottom: 12%;
   width: 100%;
   overflow: hidden;
-  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
 }
 
-.marquee span {
+.marquee-inner {
   display: inline-block;
-  padding-left: 100%;
-  font-size: 1.1rem;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee-scroll 28s linear infinite;
+}
+
+.marquee-inner span {
+  display: inline-block;
+  padding: 0 2.5rem;
+  font-size: 1.15rem;
   letter-spacing: 0.35em;
   color: var(--text-soft);
-  animation: scroll 20s linear infinite;
+  opacity: 0.95;
 }
 
-@keyframes scroll {
+/* slower, smooth loop */
+@keyframes marquee-scroll {
   from {
     transform: translateX(0);
   }
   to {
-    transform: translateX(-100%);
+    transform: translateX(-50%); /* because content duplicated */
   }
 }
 
@@ -274,3 +212,49 @@ html, body {
   letter-spacing: 0.25em;
   opacity: 0.6;
 }
+
+
+
+
+
+#image-track {
+  display: flex;
+  touch-action: pan-y; /* allow vertical scroll gestures, block horizontal */
+  gap: 4vmin;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(0%, -50%); 
+  user-select: none; /* -- Prevent image highlighting -- */
+}
+
+#image-track > .image {
+  width: 40vmin;
+  height: 56vmin;
+  object-fit: cover;
+  object-position: 100% center;
+}
+
+#image-track {
+  opacity: 0;
+  transform: translate(0%, -40%) scale(0.98);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+#image-track > .image {
+  transition: transform 0.4s ease, filter 0.4s ease;
+  filter: brightness(0.85);
+}
+
+#image-track > .image[style*="scale(1.08)"] {
+  filter: brightness(1);
+}
+
+
+/* Activated after delay */
+#image-track.reveal {
+  opacity: 1;
+  transform: translate(0%, -50%) scale(1);
+}
+
+
