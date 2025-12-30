@@ -1,0 +1,276 @@
+:root {
+  --bg-dark: #050505;
+  --bg-blue: #0a0f2c;
+  --gold: #ffd36c;
+  --cyan: #7afcff;
+  --text-soft: rgba(255, 255, 255, 0.7);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: 'Montserrat', sans-serif;
+  background: radial-gradient(circle at top, var(--bg-blue), var(--bg-dark));
+  color: white;
+}
+
+/* =======================
+   PARTICLES (Optimized)
+======================= */
+
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* Individual particle */
+.particles span {
+  position: absolute;
+
+  /* Size is randomized via JS */
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+
+  /* Soft glow */
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+
+  /* Smooth motion */
+  animation-name: floatUp;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+}
+
+/* Floating animation */
+@keyframes floatUp {
+  from {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(-120vh) scale(1);
+    opacity: 0;
+  }
+}
+
+/* =======================
+   HERO SECTION
+======================= */
+.hero {
+  height: 100%;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+}
+
+/* Glow effect */
+.glow-ring {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 211, 105, 0.25), transparent 70%);
+  filter: blur(30px);
+  animation: pulse 6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* =======================
+   SCROLL SHOWCASE
+======================= */
+
+.scroll-section {
+  position: relative;
+  background: #000;
+  /* No fixed height needed here anymore, the steps will dictate height */
+}
+
+/* The window effectively holding the image */
+.sticky-frame {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh; /* Full screen height */
+  overflow: hidden;
+  z-index: 1; /* Behind the text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The actual image styling */
+.frame-image {
+  width: auto;
+  height: 80vh; /* Max height to fit nicely */
+  max-width: 90%;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* =======================
+   SCROLL STEPS (The Triggers)
+======================= */
+
+/* This container sits ON TOP of the sticky image */
+.scroll-steps {
+  position: relative;
+  z-index: 10; 
+  margin-top: -100vh; /* Pull steps up to overlap the first sticky image */
+}
+
+/* Each step takes up one full screen scroll */
+.step {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Text styling */
+  color: white;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  font-size: 2rem;
+  font-weight: 700;
+  opacity: 0.3; /* Dim text when not active */
+  transition: opacity 0.5s ease;
+}
+
+/* Highlight the active text */
+.step.active {
+  opacity: 1;
+}
+
+/* =======================
+   HERO → STORY TRANSITION
+======================= */
+
+.transition {
+  height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0,0,0,0.8),
+    #000
+  );
+}
+
+/* Hide frame initially */
+.sticky-frame.hidden {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.9);
+}
+
+/* Reveal when active */
+.sticky-frame {
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+
+/* =======================
+   TEXT STYLES
+======================= */
+.title {
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  background: linear-gradient(90deg, var(--gold), var(--cyan), var(--gold));
+  background-size: 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0%; }
+  100% { background-position: 300%; }
+}
+
+.subtitle {
+  margin-top: 1rem;
+  font-weight: 300;
+  font-size: 1.2rem;
+  color: var(--text-soft);
+  opacity: 0;
+  animation: fadeUp 1.5s ease forwards;
+  animation-delay: 1s;
+}
+
+@keyframes fadeUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* =======================
+   MARQUEE
+======================= */
+.marquee {
+  position: absolute;
+  bottom: 12%;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee span {
+  display: inline-block;
+  padding-left: 100%;
+  font-size: 1.1rem;
+  letter-spacing: 0.35em;
+  color: var(--text-soft);
+  animation: scroll 20s linear infinite;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+
+
+/* =======================
+   FOOTER
+======================= */
+.footer {
+  position: absolute;
+  bottom: 30px;
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  opacity: 0.6;
+}
