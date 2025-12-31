@@ -61,7 +61,7 @@ let currentPercentage = 0;
 let snapTimeout = null;
 
 // Tweakables
-const SCROLL_SPEED = 0.12;
+const SCROLL_SPEED = 0.05;
 const SNAP_DELAY = 120;
 const ANIMATION_TIME = 700;
 
@@ -224,7 +224,7 @@ let touchCurrentX = 0;
 let isTouching = false;
 
 // Sensitivity (higher = faster swipe)
-const TOUCH_SPEED = 0.25;
+const TOUCH_SPEED = 0.14;
 
 window.addEventListener("touchstart", (e) => {
   touchStartX = e.touches[0].clientX;
