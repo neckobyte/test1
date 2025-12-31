@@ -364,3 +364,58 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+
+
+/* =======================
+   GLOWING MIST TRAIL
+======================= */
+
+const trailLayer = document.getElementById("trail-layer");
+
+let lastSpawn = 0;
+const MIST_SPAWN_INTERVAL = 40;
+
+function spawnMist(x, y) {
+  if (!trailLayer) return;
+
+  const now = performance.now();
+  if (now - lastSpawn < MIST_SPAWN_INTERVAL) return;
+  lastSpawn = now;
+
+  const p = document.createElement("div");
+  p.className = "trail-particle";
+
+  const offsetX = (Math.random() - 0.5) * 14;
+  const offsetY = (Math.random() - 0.5) * 14;
+
+  p.style.left = `${x + offsetX}px`;
+  p.style.top = `${y + offsetY}px`;
+
+  const driftX = (Math.random() - 0.5) * 14;
+  const driftY = (Math.random() - 0.5) * 14;
+
+  p.style.setProperty("--dx", `${driftX}px`);
+  p.style.setProperty("--dy", `${driftY}px`);
+
+
+  trailLayer.appendChild(p);
+
+  setTimeout(() => p.remove(), 1200);
+}
+
+/* Mouse */
+window.addEventListener("mousemove", (e) => {
+  spawnMist(e.clientX, e.clientY);
+});
+
+/* Touch */
+window.addEventListener(
+  "touchmove",
+  (e) => {
+    if (!e.touches[0]) return;
+    spawnMist(e.touches[0].clientX, e.touches[0].clientY);
+  },
+  { passive: true }
+);
+
