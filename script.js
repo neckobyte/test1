@@ -45,7 +45,7 @@ setInterval(() => {
 window.addEventListener("load", () => {
   setTimeout(() => {
     track.classList.add("reveal");
-  }, 3200); // 3.2s delay (tweak if needed)
+  }, 7200); // 3.2s delay (tweak if needed)
 });
 
 
@@ -224,7 +224,7 @@ let touchCurrentX = 0;
 let isTouching = false;
 
 // Sensitivity (higher = faster swipe)
-const TOUCH_SPEED = 0.14;
+const TOUCH_SPEED = 0.04
 
 window.addEventListener("touchstart", (e) => {
   touchStartX = e.touches[0].clientX;
@@ -376,6 +376,7 @@ const MIST_SPAWN_INTERVAL = 40;
 
 function spawnMist(x, y) {
   if (!trailLayer) return;
+  
 
   const now = performance.now();
   if (now - lastSpawn < MIST_SPAWN_INTERVAL) return;

@@ -35,21 +35,26 @@ html, body {
   font-family: 'Montserrat', sans-serif;
   background: radial-gradient(circle at top, var(--bg-blue), var(--bg-dark));
   color: white;
+  overscroll-behavior: none;
 }
 
 /* =======================
    AUDIO PERMISSION
 ======================= */
-
 #audio-permission {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(8px);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh; /* 👈 THIS IS THE KEY */
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  background: rgba(0, 0, 0, 0.55);
+  touch-action: none;
+    backdrop-filter: blur(8px);
+  /* isolation: isolate; IMPORTANT */
 }
 
 #audio-permission button {
@@ -291,6 +296,7 @@ html, body {
 #image-track > .image {
   width: 40vmin;
   height: 56vmin;
+  border-radius: 12px;
   object-fit: cover;
   object-position: 100% center;
 }
