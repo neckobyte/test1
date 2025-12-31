@@ -15,6 +15,13 @@
 </head>
 <body>
 
+  <!-- music permission button -->
+  <div id="audio-permission">
+    <button id="enable-audio">
+      🎵 Enable sound
+    </button>
+  </div>
+
   <!-- Floating particles -->
   <div class="particles" id="particles"></div>
 
@@ -51,8 +58,14 @@
 <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0"></div>
 
 
+<!-- music -->
+<audio id="bg-music" preload="auto" loop>
+<source src="music.mp3" type="audio/mpeg">
+</audio>
 
-  <!-- JS -->
-  <script src="script.js"></script>
+<!-- JS -->
+<script src="script.js"></script>
+
+
 </body>
 </html>

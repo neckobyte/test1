@@ -332,3 +332,35 @@ fetch(
   .catch(() => {
     document.body.innerHTML = "This link is invalid or expired.";
   });
+
+
+/* =======================
+   AUDIO PERMISSION FLOW
+======================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const music = document.getElementById("bg-music");
+  const overlay = document.getElementById("audio-permission");
+  const button = document.getElementById("enable-audio");
+
+  if (!music || !overlay || !button) return;
+
+  button.addEventListener("click", () => {
+    music.volume = 0;
+
+    music.play().then(() => {
+      // Fade in
+      let v = 0;
+      const fade = setInterval(() => {
+        v += 0.02;
+        music.volume = Math.min(v, 0.6);
+        if (v >= 0.6) clearInterval(fade);
+      }, 50);
+
+      // Hide overlay
+      overlay.style.opacity = "0";
+      overlay.style.pointerEvents = "none";
+      setTimeout(() => overlay.remove(), 300);
+    });
+  });
+});

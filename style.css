@@ -38,6 +38,39 @@ html, body {
 }
 
 /* =======================
+   AUDIO PERMISSION
+======================= */
+
+#audio-permission {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+#audio-permission button {
+  padding: 0.9rem 1.6rem;
+  font-size: 1rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+#audio-permission button:hover {
+  transform: scale(1.05);
+}
+
+
+/* =======================
    PARTICLES (Optimized)
 ======================= */
 
