@@ -91,11 +91,28 @@ function updateScene(percentage, duration = 400) {
   const progress = Math.abs(percentage) / maxScroll;
   const titleOffset = progress * TITLE_MOVE_MAX;
 
+  // Fade starts early and finishes smoothly by 2nd image
+  const fadeProgress = Math.min(
+    Math.abs(percentage) / snapStep,
+    1
+  );
+  const opacity = 1 - fadeProgress;
+
+  // Optional wipe feel (slight scale)
+  const scale = 1 - progress * 0.05;
+
+
   title.animate(
-    { transform: `translateY(-${titleOffset}px)` },
+    {
+      transform: `translateY(-${titleOffset}px) scale(${scale})`,
+      opacity: opacity
+    },
     { duration, fill: "forwards", easing: "ease-out" }
   );
 
+  // Subtitle sync
+  updateSubtitle(percentage);
+  
   //  NEW: update active image
   updateActiveImageByIndex();
 }
@@ -115,6 +132,35 @@ function updateActiveImageByIndex() {
 }
 
 
+/* --------------------
+   UPDATE SUBTITLE
+---------------------*/
+const subtitle = document.querySelector(".subtitle");
+function updateSubtitle(percentage) {
+  // Fade fully by second image
+  const fadeProgress = Math.min(
+    Math.abs(percentage) / snapStep,
+    1
+  );
+
+  // Gentle ease-out curve
+  const easedFade = Math.pow(fadeProgress, 0.85);
+
+  // Subtle downward drift
+  const offsetY = easedFade * 24;
+
+  subtitle.animate(
+    {
+      transform: `translateY(${offsetY}px)`,
+      opacity: 1 - easedFade
+    },
+    {
+      duration: 400,
+      fill: "forwards",
+      easing: "ease-out"
+    }
+  );
+}
 
 
 /* -----------------------------
