@@ -365,10 +365,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
-
 /* =======================
-   GLOWING MIST TRAIL
+   GLOWING FROST TRAIL
 ======================= */
 
 const trailLayer = document.getElementById("trail-layer");
@@ -386,22 +384,29 @@ function spawnMist(x, y) {
   const p = document.createElement("div");
   p.className = "trail-particle";
 
+  // Random frost shape
+  const variants = ["frost-a", "frost-b", "frost-c"];
+  const variant = variants[Math.floor(Math.random() * variants.length)];
+  p.classList.add(variant);
+
+  // Position with slight offset
   const offsetX = (Math.random() - 0.5) * 14;
   const offsetY = (Math.random() - 0.5) * 14;
-
   p.style.left = `${x + offsetX}px`;
   p.style.top = `${y + offsetY}px`;
 
+  // Rotation
+  p.style.setProperty("--rot", `${Math.random() * 360}deg`);
+
+  // Drift (mist motion)
   const driftX = (Math.random() - 0.5) * 14;
   const driftY = (Math.random() - 0.5) * 14;
-
   p.style.setProperty("--dx", `${driftX}px`);
   p.style.setProperty("--dy", `${driftY}px`);
 
-
   trailLayer.appendChild(p);
 
-  setTimeout(() => p.remove(), 1200);
+  setTimeout(() => p.remove(), 1400);
 }
 
 /* Mouse */
@@ -418,4 +423,3 @@ window.addEventListener(
   },
   { passive: true }
 );
-

@@ -347,7 +347,7 @@ html, body {
    FROST PARTICLES
 ======================= */
 
-.trail-particle {
+/* .trail-particle {
   position: absolute;
   width: 10px;
   height: 10px;
@@ -398,7 +398,111 @@ html, body {
       scale(0.3);
     opacity: 0;
   }
+} */
+
+
+/* =======================
+   FROST SHAPED PARTICLES
+======================= */
+
+.trail-particle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at 30% 30%,
+      rgba(255,255,255,0.95),
+      rgba(180,220,255,0.45),
+      rgba(120,180,255,0.08)
+    );
+
+  opacity: 0.9;
+  filter: blur(1.5px);
+
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--rot))
+    scale(1.2);
+
+  animation: frost-shape-fade 1.6s ease-out forwards;
+  will-change: transform, opacity;
+  box-shadow:
+  0 0 6px rgba(200,230,255,0.5),
+  0 0 12px rgba(160,210,255,0.25);
+
 }
+
+/* Variant shapes */
+.frost-a {
+  clip-path: polygon(
+    50% 0%,
+    60% 35%,
+    100% 50%,
+    60% 65%,
+    50% 100%,
+    40% 65%,
+    0% 50%,
+    40% 35%
+  );
+}
+
+.frost-b {
+  clip-path: polygon(
+    50% 0%,
+    65% 25%,
+    100% 50%,
+    65% 75%,
+    50% 100%,
+    35% 75%,
+    0% 50%,
+    35% 25%
+  );
+}
+
+.frost-c {
+  clip-path: polygon(
+    50% 0%,
+    55% 45%,
+    100% 50%,
+    55% 55%,
+    50% 100%,
+    45% 55%,
+    0% 50%,
+    45% 45%
+  );
+  
+}
+
+@keyframes frost-shape-fade {
+  0% {
+    transform:
+      translate(-50%, -50%)
+      translate(0, 0)
+      rotate(var(--rot))
+      scale(1.4);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform:
+      translate(-50%, -50%)
+      translate(var(--dx), var(--dy))
+      rotate(calc(var(--rot) + 40deg))
+      scale(0.25);
+    opacity: 0;
+  }
+  
+}
+
+
+
+
+
+
+
+
 
 /* =======================
    GLOW TRAIL LAYER
