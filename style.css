@@ -128,6 +128,12 @@ html, body {
   100% { background-position: 300%; }
 }
 
+@media (max-width: 768x) {
+  .title {
+    animation-duration: 10s; /* slower shimmer */
+  }
+}
+
 .subtitle {
   margin-top: 1rem;
   font-weight: 300;
@@ -217,7 +223,9 @@ html, body {
 
 
 
-
+/* =======================
+   IMAGE TRACKING
+======================= */
 
 #image-track {
   display: flex;
@@ -259,4 +267,16 @@ html, body {
   transform: translate(0%, -50%) scale(1);
 }
 
+@media (max-width: 768px) {
+  #image-track {
+    top: 50%;
+    gap: 3vmin;
+  }
+
+  #image-track > .image {
+    width: 70vw;
+    height: 95vw; /* near full screen */
+    border-radius: 12px;
+  }
+}
 

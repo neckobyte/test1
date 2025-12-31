@@ -2,13 +2,15 @@
    1. CONFIGURATION
 ======================= */
 const particleContainer = document.getElementById("particles");
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
 
 /* =======================
    2. PARTICLES LOGIC (unchanged)
 ======================= */
-const MAX_PARTICLES = 120;
-const SPAWN_INTERVAL = 120;
+
+const MAX_PARTICLES = isMobile ? 40 : 120;
+const SPAWN_INTERVAL = isMobile ? 200 : 120;
 
 function createParticle() {
   const particle = document.createElement("span");
@@ -110,11 +112,14 @@ function updateScene(percentage, duration = 400) {
     { duration, fill: "forwards", easing: "ease-out" }
   );
 
-  // Subtitle sync
-  updateSubtitle(percentage);
-  
-  //  NEW: update active image
-  updateActiveImageByIndex();
+  // Only update subtitle and active image if not touching
+  if (!isTouching){
+    // Subtitle sync
+    updateSubtitle(percentage);
+
+    //  NEW: update active image
+    updateActiveImageByIndex();
+  }
 }
 
 
@@ -244,12 +249,17 @@ window.addEventListener("touchmove", (e) => {
     -maxScroll
   );
 
-  updateScene(currentPercentage, 120);
+  updateScene(currentPercentage, isMobile ? 90 : 120);
 }, { passive: false });
 
 window.addEventListener("touchend", () => {
   if (!isTouching) return;
 
   isTouching = false;
+
+  // Re-apply all effects cleanly after touch
+  updateSubtitle(currentPercentage);
+  updateActiveImageByIndex();
+
   snapTimeout = setTimeout(snapToNearest, SNAP_DELAY);
 });
