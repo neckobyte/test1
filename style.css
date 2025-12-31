@@ -176,7 +176,8 @@ html, body {
 }
 
 .marquee-inner {
-  display: inline-block;
+  display: flex;
+  width: max-content;
   white-space: nowrap;
   will-change: transform;
   animation: marquee-scroll 28s linear infinite;
@@ -194,10 +195,10 @@ html, body {
 /* slower, smooth loop */
 @keyframes marquee-scroll {
   from {
-    transform: translateX(0);
+    transform: translateX(0%);
   }
   to {
-    transform: translateX(-50%); /* because content duplicated */
+    transform: translateX(-50%);
   }
 }
 
