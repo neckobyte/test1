@@ -3,6 +3,7 @@
 ======================= */
 const particleContainer = document.getElementById("particles");
 const isMobile = window.matchMedia("(max-width: 768px)").matches;
+let carouselReady = false;
 
 
 /* =======================
@@ -53,7 +54,7 @@ window.addEventListener("load", () => {
 ======================= */
 
 const track = document.getElementById("image-track");
-const images = track.getElementsByClassName("image");
+let images = [];  // For dyanamic loading on images 
 const title = document.querySelector(".title");
 
 let currentPercentage = 0;
@@ -68,14 +69,15 @@ const ANIMATION_TIME = 700;
 const TITLE_MOVE_MAX = 150;
 
 // Snap math
-const imageCount = images.length;
+let imageCount = 0;
+let snapStep = 0;
 const maxScroll = 100;
-const snapStep = maxScroll / (imageCount - 1);
 
 /* -----------------------------
    UPDATE TRACK + TITLE
 ------------------------------*/
 function updateScene(percentage, duration = 400) {
+  if (!carouselReady) return; // 🔥 STOP NaN propagation
   // Image track
   track.animate(
     { transform: `translate(${percentage}%, -50%)` },
@@ -121,8 +123,6 @@ function updateScene(percentage, duration = 400) {
     updateActiveImageByIndex();
   }
 }
-
-
 
 function updateActiveImageByIndex() {
   const index = Math.round(
@@ -263,3 +263,72 @@ window.addEventListener("touchend", () => {
 
   snapTimeout = setTimeout(snapToNearest, SNAP_DELAY);
 });
+
+/* =======================
+   Image Count & Snap Recalculation
+======================= */
+function recalcCarouselMetrics() {
+  images = track.getElementsByClassName("image");
+  imageCount = images.length;
+
+  if (imageCount <= 1) {
+    snapStep = 0;
+    return;
+  }
+
+  snapStep = maxScroll / (imageCount - 1);
+}
+
+
+/* =======================
+   SECURE IMAGE LOADER
+======================= */
+
+const params = new URLSearchParams(window.location.search);
+const token = params.get("t");
+
+if (!token) {
+  document.body.innerHTML = "Invalid or missing link.";
+  throw new Error("Missing token");
+}
+
+fetch(
+  "https://fdqfbpoqxc.execute-api.ap-south-1.amazonaws.com/default/images?token=" + token
+)
+  .then(res => {
+    if (!res.ok) throw new Error("Access denied");
+    return res.json();
+  })
+  .then(urls => {
+    let loaded = 0;
+
+    urls.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url;
+      img.className = "image";
+      img.draggable = false;
+
+      img.onload = () => {
+        loaded++;
+
+        if (loaded === urls.length) {
+          // 🔥 ALL IMAGES READY — ENABLE CAROUSEL
+          carouselReady = true;
+
+          // Recalculate ONCE
+          images = track.getElementsByClassName("image");
+          imageCount = images.length;
+          snapStep = maxScroll / (imageCount - 1);
+
+          // Lock start position
+          currentPercentage = 0;
+          updateScene(0, 0);
+        }
+      };
+
+      track.appendChild(img);
+    });
+  })
+  .catch(() => {
+    document.body.innerHTML = "This link is invalid or expired.";
+  });
