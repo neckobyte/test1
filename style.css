@@ -12,6 +12,23 @@
   box-sizing: border-box;
 }
 
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(5,5,5,0.9),
+    rgba(5,5,5,0) 15%,
+    rgba(5,5,5,0) 85%,
+    rgba(5,5,5,0.9)
+  );
+  z-index: 1;
+}
+
+
 html, body {
   height: 100%;
   overflow-x: hidden;
@@ -258,6 +275,17 @@ html, body {
 
 #image-track > .image[style*="scale(1.08)"] {
   filter: brightness(1);
+}
+
+#image-track > .image {
+  transform: scale(0.96);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+#image-track > .image.active {
+  transform: scale(1.04);
+  box-shadow: 0 30px 10px rgba(0,0,0,0.45);
 }
 
 
